@@ -4,7 +4,8 @@ function receiveData() {
       item) { queryDict[item.split("=")[0]] = item.split("=")[1] });
   var name = queryDict["n"];
   if (name) {
-    Puck.eval("BTN.read()", name, function(x) { sendData(x) })
+    var puckData = Puck.eval("getData()", name, function(x) { sendData(x) });
+    console.log("Received puck data: " + puckData);
   } else {
     console.log("name not provided!");
   }
