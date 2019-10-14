@@ -4,9 +4,18 @@ function receiveData() {
       item) { queryDict[item.split("=")[0]] = item.split("=")[1] });
   var name = queryDict["n"];
   if (name) {
-    var puckData = Puck.eval("getData()", name, function(x) { sendData(x) });
+    Puck.eval("getNames()", name, function(fileNames) {
+      var allData = [];
+      filenames.forEach(function(filename) {
+        Puck.eval('getReading("' + filename + ' ")', name, function(data) {
+          allData.push(data);
+          if (allData.length == fileNames.length) {
+            sendData(allData);
+          }
+        });
+      });
+    });
     console.log("Received puck data: " + puckData);
-    sendData(puckData);
   } else {
     console.log("name not provided!");
   }
