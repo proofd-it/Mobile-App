@@ -21,7 +21,10 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>
-    <script src="https://www.puck-js.com/puck.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://proofd-it.github.io/webapp/puck.js"></script>
+    <script src="https://proofd-it.github.io/webapp/script.js"></script>
+
 </head>
 
 <body>
@@ -45,17 +48,6 @@
                     <hr class="my-4">
                     <div id="main"></div>
                     <hr class="my-4">
-
-                    <script>
-                        //code to get data from puck
-                        function getRecords() {
-
-                            Puck.eval('getData()', function(records) {
-                                processRecords(records);
-                            });
-                        }
-                    </script>
-
 
                     <script>
                         //create visualisations
@@ -328,21 +320,34 @@
 
                             }
 
-                            let assessemntElement = document.getElementById("assessment")
 
-                            if (overalAssessment) {
-                                assessemntElement.innerHTML = "COMPLIANT";
-                            } else {
-                                assessemntElement.innerHTML = "NOT COMPLIANT";
-                            }
+                            $(document).ready(function() {
+                                var promise = new Promise((resolve, reject) => {
+                                    Puck.modal(function() {
+                                        receiveData();
+                                        resolve();
+                                    });
+                                });
+                                promise.then(_ => {
+                                    let assessemntElement = document.getElementById("assessment")
+
+                                    if (overalAssessment) {
+                                        assessemntElement.innerHTML = "COMPLIANT";
+                                    } else {
+                                        assessemntElement.innerHTML = "NOT COMPLIANT";
+                                    }
+                                    document.getElementById("main").innerHTML = html;
+                                    for (i = 0; i < recordsArray.length; i++) {
+                                        if (recordsArray[i].assessment === "not ok") {
+                                            addChart(`chart${i}`, recordsArray[i].data);
+                                        }
+                                    }
+                                    console.log("fin");
+
+                                });
+                            });
 
 
-                            document.getElementById("main").innerHTML = html;
-                            for (i = 0; i < recordsArray.length; i++) {
-                                if (recordsArray[i].assessment === "not ok") {
-                                    addChart(`chart${i}`, recordsArray[i].data);
-                                }
-                            }
 
 
                         }

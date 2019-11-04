@@ -9,8 +9,14 @@
     <script src="https://proofd-it.github.io/webapp/script.js"></script>
     <script>
         $(document).ready(function() {
-            Puck.modal(function() {
-                receiveData();
+            var promise = new Promise((resolve, reject) => {
+                Puck.modal(function() {
+                    receiveData();
+                    resolve();
+                });
+            });
+            promise.then(_ => {
+                console.log("finished");
             });
         });
     </script>
