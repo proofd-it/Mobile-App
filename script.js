@@ -7,11 +7,12 @@ function receiveData() {
   if (name) {
     var promise = new Promise((resolve, reject) => {
       Puck.eval("getAll()", name, function(data) {
-        puckData = data;
+        puckData = JSON.parse(data);
         resolve();
       });
     });
-    promise.then(_ => {});
+    promise.then(_ => {console.log(puckData)});
+    return puckData;
   } else {
     console.log("name not provided!");
   }

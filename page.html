@@ -24,6 +24,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://proofd-it.github.io/webapp/puck.js"></script>
     <script src="https://proofd-it.github.io/webapp/script.js"></script>
+    <!-- <script src="script.js"></script> -->
 
 </head>
 
@@ -128,7 +129,6 @@
 
                         var jsonRecords = JSON.stringify(records);
 
-                        setTimeout(processRecords(jsonRecords), 1000);
 
                         function toHHMMSS(sec_num) {
 
@@ -320,15 +320,17 @@
 
                             }
 
+                            console.log("lol");
 
                             $(document).ready(function() {
                                 var promise = new Promise((resolve, reject) => {
                                     Puck.modal(function() {
-                                        receiveData();
-                                        resolve();
+                                        var data = receiveData();
+                                        resolve(data);
                                     });
                                 });
-                                promise.then(_ => {
+                                promise.then(data => {
+                                    processRecords(JSON.stringify(data));
                                     let assessemntElement = document.getElementById("assessment")
 
                                     if (overalAssessment) {
