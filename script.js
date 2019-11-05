@@ -14,7 +14,13 @@ async function receiveData() {
   var name = queryDict["n"];
   var puckData;
   if (name) {
-    puckData = await getPuckData(name);
+    while (!puckData) {
+      try {
+        puckData = await getPuckData(name);
+      } catch (err) {
+        console.log("transfer failed, trying again");
+      }
+    }
     return puckData;
   } else {
     console.log("name not provided!");
