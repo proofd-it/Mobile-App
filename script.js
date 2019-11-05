@@ -3,19 +3,15 @@ function receiveData() {
   location.search.substr(1).split("&").forEach(function(
       item) { queryDict[item.split("=")[0]] = item.split("=")[1] });
   var name = queryDict["n"];
+  var puckData;
   if (name) {
-    Puck.eval("getNames()", name, function(fileNames) {
-      var allData = [];
-      filenames.forEach(function(filename) {
-        Puck.eval('getReading("' + filename + ' ")', name, function(data) {
-          allData.push(data);
-          if (allData.length == fileNames.length) {
-            sendData(allData);
-          }
-        });
+    var promise = new Promise((resolve, reject) => {
+      Puck.eval("getAll()", name, function(data) {
+        puckData = data;
+        resolve();
       });
     });
-    console.log("Received puck data: " + puckData);
+    promise.then(_ => {});
   } else {
     console.log("name not provided!");
   }
