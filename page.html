@@ -8,7 +8,6 @@
     <!-- Bootstrap core CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <!-- Material Design Bootstrap -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.8/css/mdb.min.css" rel="stylesheet">
 
     <!-- JQuery -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -164,6 +163,8 @@
                             }
 
                             console.log(times);
+                            console.log(containerID);
+                            console.log(colors);
 
                             let ctx = document.getElementById(containerID).getContext('2d');
                             ctx.height = 200;
@@ -233,19 +234,12 @@
 
                         }
 
+                        let overalAssessment = true;
 
-                        function processRecords(data) {
-
-                            let overalAssessment = true;
-
-                            let recordsArray = JSON.parse(data);
-                            console.log(recordsArray);
-
+                        function processRecords(recordsArray) {
                             let = explanationText = "no explanation";
 
                             let html = "";
-
-
                             for (i = 0; i < recordsArray.length; i++) {
 
                                 let chartHTML = "";
@@ -255,7 +249,7 @@
                                 if (recordsArray[i].assessment === "ok") {
                                     assesmentResult = '<span style="color:green">OK</span>'
 
-                                    if (recordsArray[i].state == "outside") {
+                                    if (recordsArray[i].state == "outisde") {
                                         explanationText = "Time allowed time of 15 minutes for the item to be outside a cooling facility has not been exceeded and the observed ambient temperature has not exceeded 25&deg;C";
                                     }
 
@@ -319,40 +313,37 @@
 
 
                             }
+                            return html;
+                        }
 
-                            console.log("lol");
-
-                            $(document).ready(function() {
-                                var promise = new Promise((resolve, reject) => {
-                                    Puck.modal(function() {
-                                        var data = receiveData();
-                                        resolve(data);
-                                    });
-                                });
-                                promise.then(data => {
-                                    processRecords(JSON.stringify(data));
-                                    let assessemntElement = document.getElementById("assessment")
-
-                                    if (overalAssessment) {
-                                        assessemntElement.innerHTML = "COMPLIANT";
-                                    } else {
-                                        assessemntElement.innerHTML = "NOT COMPLIANT";
-                                    }
-                                    document.getElementById("main").innerHTML = html;
-                                    for (i = 0; i < recordsArray.length; i++) {
-                                        if (recordsArray[i].assessment === "not ok") {
-                                            addChart(`chart${i}`, recordsArray[i].data);
-                                        }
-                                    }
-                                    console.log("fin");
-
+                        $(document).ready(function() {
+                            var promise = new Promise((resolve, reject) => {
+                                Puck.modal(function() {
+                                    var data = receiveData();
+                                    resolve(data);
                                 });
                             });
+                            promise.then(data => {
+                                let recordsArray = data;
+                                let html = processRecords(recordsArray);
+                                let assessemntElement = document.getElementById("assessment")
 
+                                if (overalAssessment) {
+                                    assessemntElement.innerHTML = "COMPLIANT";
+                                } else {
+                                    assessemntElement.innerHTML = "NOT COMPLIANT";
+                                }
+                                document.getElementById("main").innerHTML = html;
+                                for (i = 0; i < recordsArray.length; i++) {
+                                    if (recordsArray[i].assessment === "not ok") {
+                                        console.log(recordsArray[i].data);
+                                        addChart(`chart${i}`, recordsArray[i].data);
+                                    }
+                                }
+                                console.log("fin");
 
-
-
-                        }
+                            });
+                        });
                     </script>
 
                     <!--<button onclick="getRecords();">Get Data</button>--!>

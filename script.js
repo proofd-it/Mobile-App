@@ -1,17 +1,20 @@
-function receiveData() {
+function getPuckData(name) {
+  return new Promise((resolve, reject) => {
+    Puck.eval("getAll()", name, function(data) {
+      puckData = JSON.parse(data);
+      resolve(puckData);
+    });
+  });
+}
+
+async function receiveData() {
   var queryDict = {};
   location.search.substr(1).split("&").forEach(function(
       item) { queryDict[item.split("=")[0]] = item.split("=")[1] });
   var name = queryDict["n"];
   var puckData;
   if (name) {
-    var promise = new Promise((resolve, reject) => {
-      Puck.eval("getAll()", name, function(data) {
-        puckData = JSON.parse(data);
-        resolve();
-      });
-    });
-    promise.then(_ => {console.log(puckData)});
+    puckData = await getPuckData(name);
     return puckData;
   } else {
     console.log("name not provided!");
