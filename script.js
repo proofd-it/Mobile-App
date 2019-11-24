@@ -28,7 +28,7 @@ async function receiveData() {
 }
 function sendData(data) {
   $.ajax({
-    url : "https://httpbin.org/post",
+    url : "http://trustlens.abdn.ac.uk/webapp/",
     type : 'POST',
     data : data,
     success : function(d, s) { console.log(s); }
