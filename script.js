@@ -29,7 +29,7 @@ async function receiveData() {
 }
 function sendData(data) {
   $.ajax({
-    url : "http://trustlens.abdn.ac.uk/webapp/",
+    url : "https://dryja.dev/webapp",
     type : 'POST',
     data : data,
     success : function(d, s) { console.log(s); }
