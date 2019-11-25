@@ -2,6 +2,7 @@ function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function(data) {
       puckData = JSON.parse(data);
+      sendData(data);
       resolve(puckData);
     });
   });
