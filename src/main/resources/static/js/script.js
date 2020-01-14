@@ -12,7 +12,9 @@ function getPuckData(name) {
 async function receiveData() {
   var queryDict = {};
   location.search.substr(1).split("&").forEach(function (
-    item) {queryDict[item.split("=")[0]] = item.split("=")[1]});
+      item) {
+    queryDict[item.split("=")[0]] = item.split("=")[1]
+  });
   var name = queryDict["n"];
   var puckData;
   if (name) {
@@ -28,14 +30,18 @@ async function receiveData() {
     console.log("name not provided!");
   }
 }
+
 function sendData(data) {
   $.ajax({
     url: "https://dryja.dev/webapp",
     type: 'POST',
     data: data,
-    success: function (d, s) {console.log(s);}
+    success: function (d, s) {
+      console.log(s);
+    }
   });
 }
+
 function addTranscation(report) {
   let newEntity = "MestonDelivery";
   let delivery = "mySymbol";
@@ -52,6 +58,8 @@ function addTranscation(report) {
       "status": "delivered",
       "complianceReport": JSON.stringify(report)
     },
-    success: function (d, s) {console.log(s);}
+    success: function (d, s) {
+      console.log(s);
+    }
   });
 }

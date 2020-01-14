@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <!-- Font Awesome -->
+    <link href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" rel="stylesheet">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+
+    <!-- JQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" type="text/javascript"></script>
+    <!-- Bootstrap tooltips -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"
+            type="text/javascript"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+            type="text/javascript"></script>
+    <!-- MDB core JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.8.8/js/mdb.min.js"
+            type="text/javascript"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.bundle.min.js"></script>
+    <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script th:src="@{/js/puck.js}"></script>
+    <script th:src="@{/js/script.js}"></script>
+
+</head>
+
+<body>
+<div class="container-fluid mt-2">
+
+    <!--Grid row-->
+    <div class="row">
+
+        <!--Grid column-->
+        <div class="col-md-12 mb-12">
+
+            <h2 style="text-align:center; font-size:50px;">Overall Assessment: <strong><span
+                    id="assessment"></span></strong>
+            </h2>
+            <h2 style="text-align:center; font-size:50px;">Warnings: <strong><span id="warning"></span></strong></h2>
+            <div class="col-md-12 mb-12">
+                <div class="row">
+                    <div class="col-sm-12 text-center">
+                        <button OnClick="btnSearch_Click" Style="width: 300px;font-size:40px;"
+                                class="btn btn-primary btn-md center-block"
+                                id="btnSearch">Accept
+                        </button>
+                        <button OnClick="btnClear_Click" Style="width: 300px;font-size:40px;"
+                                class="btn btn-danger btn-md center-block"
+                                id="btnClear">Reject
+                        </button>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                <div id="main"></div>
+                <hr class="my-4">
+
+                <script>
+                    function toHHMMSS(sec_num) {
+
+                        let hours = Math.floor(sec_num / 3600);
+                        let minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+                        let seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+                        if (hours < 10) {
+                            hours = "0" + hours;
+                        }
+                        if (minutes < 10) {
+                            minutes = "0" + minutes;
+                        }
+                        if (seconds < 10) {
+                            seconds = "0" + seconds;
+                        }
+                        return hours + ':' + minutes + ':' + seconds;
+                    }
+
+
+                    function addChart(containerID, records) {
+                        colors = [];
+                        times = [];
+                        for (i = 0; i < records.length; i++) {
+                            times.push(records[i].t);
+
+                            if (records[i].y > 5) {
+                                colors.push('#FF0000');
+                            } else {
+                                colors.push('#000000');
+                            }
+                        }
+
+                        let ctx = document.getElementById(containerID).getContext('2d');
+                        ctx.height = 200;
+                        ctx.width = 200;
+                        let myChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: times,
+                                datasets: [{
+                                    label: 'temperature',
+                                    data: records,
+                                    backgroundColor: colors,
+                                    borderWidth: 1
+                                }]
+                            },
+                            options: {
+                                maintainAspectRatio: false,
+                                scales: {
+                                    yAxes: [{
+                                        ticks: {
+                                            beginAtZero: true,
+                                            fontSize: 20
+                                        }
+                                    }
+
+                                    ],
+
+                                    xAxes: [{
+                                        type: 'time',
+                                        distribution: 'linear',
+                                        ticks: {
+                                            fontSize: 20
+                                        }
+                                    }]
+
+                                },
+                                annotation: {
+                                    annotations: [{
+                                        type: 'line',
+                                        mode: 'horizontal',
+                                        scaleID: 'y-axis-0',
+                                        value: 5,
+                                        borderColor: 'rgb(75, 192, 192)',
+                                        borderWidth: 4,
+                                        label: {
+                                            enabled: true,
+                                            content: 'Maximum cold storage temperature',
+                                            fontSize: 30
+                                        }
+                                    }],
+
+
+                                },
+                                legend: {
+                                    labels: {
+                                        // This more specific font property overrides the global property
+                                        fontSize: 30
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    let overallAssessment = true;
+
+                    function processRecords(recordsArray) {
+                        let explanationText = "no explanation";
+                        let html = "";
+                        for (i = 0; i < recordsArray.length; i++) {
+
+                            let chartHTML = "";
+                            let assessmentResult = "assessemnt missing";
+                            if (recordsArray[i].assessment === "ok") {
+                                assessmentResult = '<span style="color:green">OK</span>';
+                                if (recordsArray[i].state == "outside") {
+                                    explanationText = "Time allowed time of 15 minutes for the item to be outside a cooling facility has not been exceeded and the observed ambient temperature has not exceeded 25&deg;C";
+                                }
+                                if (recordsArray[i].state == "fridge") {
+                                    explanationText = "The observed fridge temperature has not exceeded 5&deg;C in 3 consecutive readings";
+                                }
+                            }
+
+                            if (recordsArray[i].assessment === "not ok") {
+                                overallAssessment = false;
+                                assessmentResult = '<span style="color:red">NOT OK</span>';
+
+                                if (recordsArray[i].state == "outside") {
+                                    explanationText = "Time allowed for the item to be outside a cooling facility has been exceeded or the observed ambient temperature has exceeded 5&deg;C";
+                                }
+
+                                if (recordsArray[i].state == "fridge") {
+                                    explanationText = "The observed fridge temperature has exceeded 5&deg;C in at least 3 consecutive readings";
+                                }
+
+
+                                ///include chart as well
+                                chartHTML = `<canvas id="chart${i}" style="max-height:450px; " ></canvas>`;
+
+                            }
+                            let date = Date.parse(recordsArray[i].timeEnd) - Date.parse(recordsArray[i].timeStart);
+                            html = html + `
+  <div class="accordion" id="accordionExample">
+  <div class="card z-depth-0 bordered">
+    <div class="card-header" id="headingOne">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" style="font-size:2.5rem;" type="button" data-toggle="collapse" data-target="#collapse${i}"
+          aria-expanded="true" aria-controls="collapse${i}">
+          Stage:  ${recordsArray[i].state} <br>
+          Start:  ${recordsArray[i].timeStart}  <br>
+          Duration:  ${toHHMMSS(date / 1000)} <br>
+        </button>
+
+        <p style="float:right;font-size:2.5rem;"> Assessment
+        <br>
+
+        ${assessmentResult}
+        </p>
+      </h5>
+    </div>
+    <div id="collapse${i}" class="collapse" aria-labelledby="headingOne"
+      data-parent="#accordionExample">
+      <div class="card-body"  >
+
+     ${chartHTML}
+      <p style="font-size:30px">${explanationText}</p>
+
+      </div>
+    </div>
+  </div>
+</div>
+  `;
+                        }
+                        return html;
+                    }
+
+                    $(document).ready(function () {
+                        var promise = new Promise((resolve, reject) => {
+                            Puck.modal(function () {
+                                var data = receiveData();
+                                resolve(data);
+                            });
+                        });
+                        promise.then(data => {
+                            let recordsArray = data.states;
+                            recordsArray.forEach(function (item) {
+                                if (item.asssessment === "not ok") {
+                                    overallAssessment = false;
+                                }
+                            });
+
+                            let html = processRecords(recordsArray);
+                            let assessemntElement = document.getElementById("assessment");
+                            let warningElement = document.getElementById("warning");
+
+                            if (data.warning) {
+                                warningElement.innerHTML = data.warning;
+                            }
+                            if (overallAssessment) {
+                                assessemntElement.innerHTML = "COMPLIANT";
+                            } else {
+                                assessemntElement.innerHTML = "NOT COMPLIANT";
+                            }
+                            document.getElementById("main").innerHTML = html;
+                            for (i = 0; i < recordsArray.length; i++) {
+                                if (recordsArray[i].assessment === "not ok") {
+                                    console.log(recordsArray[i].data);
+                                    addChart(`chart${i}`, recordsArray[i].data);
+                                }
+                            }
+                            console.log("fin");
+
+                        });
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

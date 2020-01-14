@@ -42,7 +42,7 @@ Or more advanced usage with control of the connection
 */
 
 var beaconName;
-var Puck = (function() {
+var Puck = (function () {
   if (typeof navigator == "undefined")
     return;
   var isBusy;
@@ -52,12 +52,12 @@ var Puck = (function() {
     // Hack for windows
     if (navigator.platform.indexOf("Win") >= 0 &&
         (navigator.userAgent.indexOf("Chrome/54") >= 0 ||
-         navigator.userAgent.indexOf("Chrome/55") >= 0 ||
-         navigator.userAgent.indexOf("Chrome/56") >= 0)) {
+            navigator.userAgent.indexOf("Chrome/55") >= 0 ||
+            navigator.userAgent.indexOf("Chrome/56") >= 0)) {
       console.warn(
           "Chrome <56 in Windows has navigator.bluetooth but it's not implemented properly");
       if (confirm(
-              "Web Bluetooth on Windows is not yet available.\nPlease click Ok to see other options for using Web Bluetooth"))
+          "Web Bluetooth on Windows is not yet available.\nPlease click Ok to see other options for using Web Bluetooth"))
         window.location = "https://www.espruino.com/Puck.js+Quick+Start";
       return false;
     }
@@ -67,11 +67,11 @@ var Puck = (function() {
     var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     if (iOS) {
       if (confirm(
-              "To use Web Bluetooth on iOS you'll need the WebBLE App.\nPlease click Ok to go to the App Store and download it."))
+          "To use Web Bluetooth on iOS you'll need the WebBLE App.\nPlease click Ok to go to the App Store and download it."))
         window.location = "https://itunes.apple.com/us/app/webble/id1193531073";
     } else {
       if (confirm(
-              "This Web Browser doesn't support Web Bluetooth.\nPlease click Ok to see instructions for enabling it."))
+          "This Web Browser doesn't support Web Bluetooth.\nPlease click Ok to see instructions for enabling it."))
         window.location = "https://www.espruino.com/Puck.js+Quick+Start";
     }
     return false;
@@ -118,14 +118,16 @@ var Puck = (function() {
       return;
 
     var connection = {
-      on : function(evt, cb) { this["on" + evt] = cb; },
-      emit : function(evt, data) {
+      on: function (evt, cb) {
+        this["on" + evt] = cb;
+      },
+      emit: function (evt, data) {
         if (this["on" + evt])
           this["on" + evt](data);
       },
-      isOpen : false,
-      isOpening : true,
-      txInProgress : false
+      isOpen: false,
+      isOpening: true,
+      txInProgress: false
     };
     var btServer = undefined;
     var btService;
@@ -134,7 +136,7 @@ var Puck = (function() {
     var rxCharacteristic;
     var txDataQueue = [];
 
-    connection.close = function() {
+    connection.close = function () {
       connection.isOpening = false;
       if (connection.isOpen) {
         connection.isOpen = false;
@@ -151,9 +153,9 @@ var Puck = (function() {
       }
     };
 
-    connection.write = function(data, callback) {
+    connection.write = function (data, callback) {
       if (data)
-        txDataQueue.push({data : data, callback : callback});
+        txDataQueue.push({data: data, callback: callback});
       if (connection.isOpen && !connection.txInProgress)
         writeChunk();
 
@@ -172,7 +174,7 @@ var Puck = (function() {
         connection.txInProgress = true;
         log(2, "Sending " + JSON.stringify(chunk));
         txCharacteristic.writeValue(str2ab(chunk))
-            .then(function() {
+            .then(function () {
               log(3, "Sent");
               if (!txItem.data) {
                 txDataQueue.shift(); // remove this element
@@ -182,7 +184,7 @@ var Puck = (function() {
               connection.txInProgress = false;
               writeChunk();
             })
-            .catch(function(error) {
+            .catch(function (error) {
               log(1, 'SEND ERROR: ' + error);
               txDataQueue = [];
               connection.close();
@@ -193,36 +195,36 @@ var Puck = (function() {
     console.log(beaconName);
     navigator.bluetooth
         .requestDevice({
-          filters : [ {name : beaconName} ],
-          optionalServices : [ NORDIC_SERVICE ]
+          filters: [{name: beaconName}],
+          optionalServices: [NORDIC_SERVICE]
         })
-        .then(function(device) {
+        .then(function (device) {
           log(1, 'Device Name:       ' + device.name);
           log(1, 'Device ID:         ' + device.id);
           // Was deprecated: Should use getPrimaryServices for this in future
           // log('BT>  Device UUIDs:      ' + device.uuids.join('\n' + '
           // '.repeat(21)));
-          device.addEventListener('gattserverdisconnected', function() {
+          device.addEventListener('gattserverdisconnected', function () {
             log(1, "Disconnected (gattserverdisconnected)");
             connection.close();
           });
           return device.gatt.connect();
         })
-        .then(function(server) {
+        .then(function (server) {
           log(1, "Connected");
           btServer = server;
           return server.getPrimaryService(NORDIC_SERVICE);
         })
-        .then(function(service) {
+        .then(function (service) {
           log(2, "Got service");
           btService = service;
           return btService.getCharacteristic(NORDIC_RX);
         })
-        .then(function(characteristic) {
+        .then(function (characteristic) {
           rxCharacteristic = characteristic;
           log(2, "RX characteristic:" + JSON.stringify(rxCharacteristic));
           rxCharacteristic.addEventListener(
-              'characteristicvaluechanged', function(event) {
+              'characteristicvaluechanged', function (event) {
                 var value = event.target.value.buffer; // get arraybuffer
                 var str = ab2str(value);
                 log(3, "Received " + JSON.stringify(str));
@@ -230,12 +232,14 @@ var Puck = (function() {
               });
           return rxCharacteristic.startNotifications();
         })
-        .then(function() { return btService.getCharacteristic(NORDIC_TX); })
-        .then(function(characteristic) {
+        .then(function () {
+          return btService.getCharacteristic(NORDIC_TX);
+        })
+        .then(function (characteristic) {
           txCharacteristic = characteristic;
           log(2, "TX characteristic:" + JSON.stringify(txCharacteristic));
         })
-        .then(function() {
+        .then(function () {
           connection.txInProgress = false;
           connection.isOpen = true;
           connection.isOpening = false;
@@ -246,15 +250,16 @@ var Puck = (function() {
           // if we had any writes queued, do them now
           connection.write();
         })
-        .catch(function(error) {
+        .catch(function (error) {
           log(1, 'ERROR: ' + error);
           connection.close();
         });
     return connection;
-  };
+  }
 
   // ----------------------------------------------------------
   var connection;
+
   /* convenience function... Write data, call the callback with data:
        callbackNewline = false => if no new data received for ~0.2 sec
        callbackNewline = true => after a newline */
@@ -265,18 +270,19 @@ var Puck = (function() {
     if (isBusy) {
       log(3, "Busy - adding Puck.write to queue");
       queue.push({
-        type : "write",
-        data : data,
-        callback : callback,
-        callbackNewline : callbackNewline
+        type: "write",
+        data: data,
+        callback: callback,
+        callbackNewline: callbackNewline
       });
       return;
     }
 
     var cbTimeout;
+
     function onWritten() {
       if (callbackNewline) {
-        connection.cb = function(d) {
+        connection.cb = function (d) {
           var newLineIdx = connection.received.indexOf("\n");
           if (newLineIdx >= 0) {
             var l = connection.received.substr(0, newLineIdx);
@@ -328,7 +334,7 @@ var Puck = (function() {
       return connection.write(data, onWritten);
     }
 
-    connection = connect(function(puck) {
+    connection = connect(function (puck) {
       if (!puck) {
         connection = undefined;
         if (callback)
@@ -336,13 +342,15 @@ var Puck = (function() {
         return;
       }
       connection.received = "";
-      connection.on('data', function(d) {
+      connection.on('data', function (d) {
         connection.received += d;
         connection.hadData = true;
         if (connection.cb)
           connection.cb(d);
       });
-      connection.on('close', function(d) { connection = undefined; });
+      connection.on('close', function (d) {
+        connection = undefined;
+      });
       isBusy = true;
       connection.write(data, onWritten);
     });
@@ -353,76 +361,80 @@ var Puck = (function() {
   var puck = {
     /// Are we writing debug information? 0 is no, 1 is some, 2 is more, 3 is
     /// all.
-    debug : 1,
+    debug: 1,
     /// Used internally to write log information - you can replace this with
     /// your own function
-    log : function(level, s) {
+    log: function (level, s) {
       if (level <= this.debug)
         console.log("<BLE> " + s)
     },
     /**
      Connect to a new device - this creates a separate
      connection to the one `write` and `eval` use.
-   */
-    connect : connect,
+     */
+    connect: connect,
     /// Write to Puck.js and call back when the data is written.  Creates a
     /// connection if it doesn't exist
-    write : write,
+    write: write,
     /// Evaluate an expression and call cb with the result. Creates a connection
     /// if it doesn't exist
-    eval : function(expr, name, cb) {
+    eval: function (expr, name, cb) {
       beaconName = name;
       if (!checkIfSupported())
         return;
       if (isBusy) {
         log(3, "Busy - adding Puck.eval to queue");
-        queue.push({type : "eval", expr : expr, cb : cb});
+        queue.push({type: "eval", expr: expr, cb: cb});
         return;
       }
       write(
-          '\x10Bluetooth.println(JSON.stringify(' + expr + '))\n', function(d) {
+          '\x10Bluetooth.println(JSON.stringify(' + expr + '))\n', function (d) {
             try {
               var json = JSON.parse(d);
               cb(json);
             } catch (e) {
               log(1, "Unable to decode " + JSON.stringify(d) + ", got " +
-                         e.toString());
+                  e.toString());
               cb(null, "Unable to decode " + JSON.stringify(d) + ", got " +
-                           e.toString());
+                  e.toString());
             }
           }, true);
     },
     /// Write the current time to the Puck
-    setTime : function(cb) {
+    setTime: function (cb) {
       var d = new Date();
       var cmd = 'setTime(' + (d.getTime() / 1000) + ');';
       // in 1v93 we have timezones too
       cmd += 'if (E.setTimeZone) E.setTimeZone(' + d.getTimezoneOffset() / -60 +
-             ');\n';
+          ');\n';
       write(cmd, cb);
     },
     /// Did `write` and `eval` manage to create a connection?
-    isConnected : function() { return connection !== undefined; },
+    isConnected: function () {
+      return connection !== undefined;
+    },
     /// get the connection used by `write` and `eval`
-    getConnection : function() { return connection; },
+    getConnection: function () {
+      return connection;
+    },
     /// Close the connection used by `write` and `eval`
-    close : function() {
+    close: function () {
       if (connection)
         connection.close();
     },
     /**
-    Utility function to fade out everything on the webpage and display
-    a window saying 'Click to continue'. When clicked it'll disappear and
-    'callback' will be called. This is useful because you can't initialise
-    Web Bluetooth unless you're doing so in response to a user input.
-  */
-    modal : function(callback) {
+     Utility function to fade out everything on the webpage and display
+     a window saying 'Click to continue'. When clicked it'll disappear and
+     'callback' will be called. This is useful because you can't initialise
+     Web Bluetooth unless you're doing so in response to a user input.
+     */
+    modal: function (callback) {
       var e = document.createElement('div');
       e.style =
           'position:absolute;top:0px;left:0px;right:0px;bottom:0px;opacity:0.5;z-index:100;background:black;';
       e.innerHTML =
           '<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family: Sans-Serif;font-size:400%;color:white;">Click to Continue...</div>';
-      e.onclick = function(evt) {
+      e.onclick = function (evt) {
         callback();
         evt.preventDefault();
         document.body.removeChild(e);
