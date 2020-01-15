@@ -3,7 +3,6 @@ function getPuckData(name) {
     Puck.eval("getAll()", name, function (data) {
       puckData = JSON.parse(data);
       sendData(data);
-      addTranscation(data);
       resolve(puckData);
     });
   });
@@ -42,24 +41,24 @@ function sendData(data) {
   });
 }
 
-function addTranscation(report) {
-  let newEntity = "MestonDelivery";
-  let delivery = "mySymbol";
-  $.ajax({
-    url: "http://trustlens.abdn.ac.uk/api/Delivery",
-    type: 'POST',
-    beforeSend: function (xhr) {
-      // TODO(kdryja): DO NOT STORE AS PLAINTEXT!!!!!!
-      xhr.setRequestHeader('Authorization', 'Basic ' + btoa('kdryja:aberdeen2020'))
-    },
-    data: {
-      "commodity": delivery,
-      "newOwner": newEntity,
-      "status": "delivered",
-      "complianceReport": JSON.stringify(report)
-    },
-    success: function (d, s) {
-      console.log(s);
-    }
-  });
-}
+// function addTranscation(report) {
+//   let newEntity = "MestonDelivery";
+//   let delivery = "mySymbol";
+//   $.ajax({
+//     url: "http://trustlens.abdn.ac.uk/doors/api/Delivery",
+//     type: 'POST',
+//     beforeSend: function (xhr) {
+//       // TODO(kdryja): DO NOT STORE AS PLAINTEXT!!!!!!
+//       xhr.setRequestHeader('Authorization', 'Basic ' + btoa('kdryja:aberdeen2020'))
+//     },
+//     data: {
+//       "commodity": delivery,
+//       "newOwner": newEntity,
+//       "status": "delivered",
+//       "complianceReport": JSON.stringify(report)
+//     },
+//     success: function (d, s) {
+//       console.log(s);
+//     }
+//   });
+// }

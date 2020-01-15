@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class WelcomeController {
 
-    @GetMapping("/")
+    @GetMapping("/receive")
     public String main(Model model) {
         return "page"; //view
     }
