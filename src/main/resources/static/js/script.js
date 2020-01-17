@@ -1,3 +1,5 @@
+let complianceReport = {"hello": "world"};
+
 function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function (data) {
@@ -24,6 +26,7 @@ async function receiveData() {
         console.log("transfer failed, trying again");
       }
     }
+    complianceReport = puckData;
     return puckData;
   } else {
     console.log("name not provided!");
@@ -32,33 +35,18 @@ async function receiveData() {
 
 function sendData(data) {
   $.ajax({
-    url: "https://dryja.dev/webapp",
+    url: "https://trustlens.abdn.ac.uk/api/save",
     type: 'POST',
-    data: data,
-    success: function (d, s) {
-      console.log(s);
-    }
+    data: data
   });
 }
 
-// function addTranscation(report) {
-//   let newEntity = "MestonDelivery";
-//   let delivery = "mySymbol";
-//   $.ajax({
-//     url: "http://trustlens.abdn.ac.uk/doors/api/Delivery",
-//     type: 'POST',
-//     beforeSend: function (xhr) {
-//       // TODO(kdryja): DO NOT STORE AS PLAINTEXT!!!!!!
-//       xhr.setRequestHeader('Authorization', 'Basic ' + btoa('kdryja:aberdeen2020'))
-//     },
-//     data: {
-//       "commodity": delivery,
-//       "newOwner": newEntity,
-//       "status": "delivered",
-//       "complianceReport": JSON.stringify(report)
-//     },
-//     success: function (d, s) {
-//       console.log(s);
-//     }
-//   });
-// }
+function addToBlockchain(accepted) {
+  let payload = complianceReport;
+  payload["status"] = accepted ? "accepted" : "rejected";
+  $.ajax({
+    url: "https://trustlens.abdn.ac.uk/api/transaction",
+    type: 'POST',
+    data: payload
+  });
+}
