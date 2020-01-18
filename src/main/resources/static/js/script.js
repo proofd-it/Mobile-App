@@ -35,7 +35,7 @@ async function receiveData() {
 
 function sendData(data) {
   $.ajax({
-    url: "https://trustlens.abdn.ac.uk/api/save",
+    url: "https://trustlens.abdn.ac.uk/blockchain/save",
     type: 'POST',
     data: data
   });
@@ -45,7 +45,7 @@ function addToBlockchain(accepted) {
   let payload = complianceReport;
   payload["status"] = accepted ? "accepted" : "rejected";
   $.ajax({
-    url: "https://trustlens.abdn.ac.uk/api/transaction",
+    url: "https://trustlens.abdn.ac.uk/blockchain/transaction",
     type: 'POST',
     data: payload
   });
