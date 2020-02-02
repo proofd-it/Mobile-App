@@ -50,6 +50,7 @@ function sendData(data) {
 }
 
 function addToBlockchain(accepted) {
+  complianceReport["status"] = accepted ? "accepted" : "rejected";
   let payload = complianceReport;
   payload["status"] = accepted ? "accepted" : "rejected";
   $.ajax({
