@@ -10,9 +10,9 @@ function uuidv4() {
 function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function (data) {
-      puckData = JSON.parse(data);
-      data["deliveryID"] = uuidv4();
-      sendData(data);
+      let puckData = JSON.parse(data);
+      puckData["deliveryID"] = uuidv4();
+      sendData(JSON.stringify(puckData));
       resolve(puckData);
     });
   });
@@ -53,6 +53,7 @@ function addToBlockchain(accepted) {
   complianceReport["status"] = accepted ? "accepted" : "rejected";
   let payload = complianceReport;
   payload["status"] = accepted ? "accepted" : "rejected";
+  payload = JSON.stringify(payload);
   $.ajax({
     url: "https://trustlens.abdn.ac.uk/blockchain/transaction",
     type: 'POST',
