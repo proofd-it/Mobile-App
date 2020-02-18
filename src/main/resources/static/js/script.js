@@ -11,7 +11,13 @@ function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function (data) {
       if (data != null) {
-        let puckData = JSON.parse(data);
+	let puckData;
+	try {
+            puckData = JSON.parse(data);
+	} catch (e) {
+            console.log(e);
+	    reject();
+	}
         puckData["deliveryID"] = uuidv4();
         sendData(JSON.stringify(puckData));
         resolve(puckData);
@@ -31,11 +37,13 @@ async function receiveData() {
   var name = queryDict["n"];
   var puckData;
   if (name) {
+    console.log("name is: " + name);
+    while(puckData==null) {
     try {
       puckData = await getPuckData(name);
     } catch (err) {
       console.log("transfer failed, trying again");
-      receiveData();
+    }
     }
     complianceReport = puckData;
     return puckData;
@@ -49,7 +57,7 @@ function sendData(data) {
     url: "https://trustlens.abdn.ac.uk/blockchain/save",
     contentType: "application/json",
     type: 'POST',
-    data: data
+    data: JSON.stringify(data)
   });
 }
 
