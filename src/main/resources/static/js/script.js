@@ -10,20 +10,20 @@ function wait(ms) {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(ms)
-    }, ms )
+    }, ms)
   })
 }
 function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function (data) {
       if (data != null) {
-	let puckData;
-	try {
-            puckData = JSON.parse(data);
-	} catch (e) {
-            console.log(e);
-	    reject();
-	}
+        let puckData;
+        try {
+          puckData = JSON.parse(data);
+        } catch (e) {
+          console.log(e);
+          reject();
+        }
         puckData["deliveryID"] = uuidv4();
         sendData(JSON.stringify(puckData));
         resolve(puckData);
@@ -44,13 +44,14 @@ async function receiveData() {
   var puckData;
   if (name) {
     console.log("name is: " + name);
-    while(puckData==null) {
-    try {
-      puckData = await getPuckData(name);
-    } catch (err) {
-      console.log("transfer failed, trying again");
-      await wait(100);
-    }
+    while (puckData == null) {
+      try {
+        console.log("Trying to parse data")
+        puckData = await getPuckData(name);
+      } catch (err) {
+        console.log("transfer failed, trying again");
+        await wait(500);
+      }
     }
     complianceReport = puckData;
     return puckData;
@@ -73,10 +74,12 @@ function addToBlockchain(accepted) {
   let payload = complianceReport;
   payload["status"] = accepted ? "accepted" : "rejected";
   payload = JSON.stringify(payload);
+  $("body").LoadingOverlay("show")
   $.ajax({
     url: "https://trustlens.abdn.ac.uk/blockchain/transaction",
     contentType: "application/json",
     type: 'POST',
-    data: payload
-  });
+    data: payload,
+    complete: function () {$("body").LoadingOverlay("hide")}
+  })
 }

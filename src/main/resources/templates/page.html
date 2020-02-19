@@ -25,6 +25,7 @@
     <script
             src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/0.5.7/chartjs-plugin-annotation.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
     <script th:src="@{/js/puck.js}"></script>
     <script th:src="@{/js/script.js}"></script>
 
@@ -231,6 +232,7 @@
                     $(document).ready(function () {
                         var promise = new Promise((resolve, reject) => {
                             Puck.modal(function () {
+                                $("body").LoadingOverlay("show")
                                 var data = receiveData();
                                 resolve(data);
                             });
@@ -263,6 +265,7 @@
                                     addChart(`chart${i}`, recordsArray[i].data, guideline);
                                 }
                             }
+                            $("body").LoadingOverlay("hide")
                         });
                     });
                 </script>
