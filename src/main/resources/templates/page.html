@@ -81,7 +81,7 @@
                     }
 
 
-                    function addChart(containerID, records) {
+                    function addChart(containerID, records, guideline) {
                         colors = [];
                         times = [];
                         for (i = 0; i < records.length; i++) {
@@ -134,7 +134,7 @@
                                         type: 'line',
                                         mode: 'horizontal',
                                         scaleID: 'y-axis-0',
-                                        value: 5,
+                                        value: guideline,
                                         borderColor: 'rgb(75, 192, 192)',
                                         borderWidth: 4,
                                         label: {
@@ -180,7 +180,7 @@
                                 assessmentResult = '<span style="color:red">NOT OK</span>';
 
                                 if (recordsArray[i].state == "outside") {
-                                    explanationText = "Time allowed for the item to be outside a cooling facility has been exceeded or the observed ambient temperature has exceeded 5&deg;C";
+                                    explanationText = "Time allowed for the item to be outside a cooling facility has been exceeded or the observed ambient temperature has exceeded 20&deg;C";
                                 }
 
                                 if (recordsArray[i].state == "fridge") {
@@ -247,8 +247,8 @@
                             let assessemntElement = document.getElementById("assessment");
                             let warningElement = document.getElementById("warning");
 
-                            if (data.warning) {
-                                warningElement.innerHTML = data.warning;
+                            if (data.warnings) {
+                                warningElement.innerHTML = data.warnings.map(x => x.warning).join(", ");
                             }
                             if (overallAssessment) {
                                 assessemntElement.innerHTML = "COMPLIANT";
@@ -258,12 +258,11 @@
                             document.getElementById("main").innerHTML = html;
                             for (i = 0; i < recordsArray.length; i++) {
                                 if (recordsArray[i].assessment === "not ok") {
+                                    let guideline = recordsArray[i].state == "outside" ? 20 : 5;
                                     console.log(recordsArray[i].data);
-                                    addChart(`chart${i}`, recordsArray[i].data);
+                                    addChart(`chart${i}`, recordsArray[i].data, guideline);
                                 }
                             }
-                            console.log("fin");
-
                         });
                     });
                 </script>

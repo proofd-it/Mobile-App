@@ -6,7 +6,13 @@ function uuidv4() {
     return v.toString(16);
   });
 }
-
+function wait(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(ms)
+    }, ms )
+  })
+}
 function getPuckData(name) {
   return new Promise((resolve, reject) => {
     Puck.eval("getAll()", name, function (data) {
@@ -43,6 +49,7 @@ async function receiveData() {
       puckData = await getPuckData(name);
     } catch (err) {
       console.log("transfer failed, trying again");
+      await wait(100);
     }
     }
     complianceReport = puckData;
