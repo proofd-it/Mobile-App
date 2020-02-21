@@ -37,14 +37,17 @@
             background: #f7f7f7;
             margin: auto;
         }
+
         .not-ok {
             border-color: red;
             color: red;
         }
+
         .ok {
             border-color: green;
             color: green;
         }
+
         #warning {
             text-align: center;
             font-size: 30px;
@@ -52,7 +55,8 @@
             border-style: solid;
             border-width: 2px;
             background: #f7f7f7;
-            padding: 5px;
+            padding-top: 8px;
+            padding-bottom: 8px;
         }
         .warning-present {
             border-color: #FFBF00;
@@ -78,7 +82,7 @@
 
             <div class="col-md-12">
                 <div><h2 style="text-align:center; font-size:50px;">Warnings:</h2></div>
-                <div class="col-md-12 no-warning" id="warning">No Warnings</div>
+                <div class="col-md-12" id="warning">No Warnings</div>
             </div>
 
             <div class="col-md-12 mb-12">
@@ -289,13 +293,15 @@
                             let warningElement = document.getElementById("warning");
 
                             if (data.warnings) {
+                                let warningHtml = "<ol>"
                                 warningElement.innerHTML = "<ol>";
                                 let allWarnings = data.warnings.map(x => x.warning);
-                                allWarnings.forEach(function(item){
-                                    warningElement.innerHTML += "<li>" + item + "</li>";
-                                });
-                                warningElement.innerHTML += "</ol>";
+                                for (let i = 0; i < allWarnings.length; i++) {
+                                    warningHtml += "<li>" + allWarnings[i] + "</li>";
+                                }
+                                warningHtml += "</ol>";
                                 warningElement.classList.add("warning-present")
+                                $('#warning').html(warningHtml);
                             }
                             if (overallAssessment) {
                                 assessemntElement.innerHTML = "OK";
