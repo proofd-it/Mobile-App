@@ -38,19 +38,22 @@
             border-width: 2px;
             margin: auto;
         }
+
         .not-ok {
             background: red;
             color: white;
             font-weight: bolder;
         }
+
         .ok {
             background: green;
             color: white;
             font-weight: bolder;
         }
+
         #warning {
             text-align: center;
-            font-size: 50px;
+            font-size: 35px;
             margin: auto;
             border-style: solid;
             border-width: 2px;
@@ -58,10 +61,12 @@
             padding-top: 8px;
             padding-bottom: 8px;
         }
+
         .warning-present {
             border-color: #FFBF00;
             color: #FFBF00;
         }
+
         ol {
             margin: 1rem;
             list-style-type: none;
@@ -246,23 +251,27 @@
                             html = html + `
   <div class="accordion" id="accordionExample">
   <div class="card z-depth-0 bordered">
-    <div class="card-header" id="headingOne">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" style="font-size:2.5rem;text-align: left;" type="button" data-toggle="collapse" data-target="#collapse${i}"
-          aria-expanded="true" aria-controls="collapse${i}">
-          <b><span style="font-size: 3.5rem; ">${state}</span></b> <br>
-          <i class="fa fa-calendar-alt"></i> <b>Start:</b>  ${start}  <br>
-          <i class="fa fa-clock"></i> <b>Duration:</b>  ${toHHMMSS(date / 1000)} <br>
-          <i class="fa fa-thermometer-half"></i> <b>Average:</b>  ${recordsArray[i].average.toFixed(3)}&deg;C <br>
-        </button>
+    <button class="btn btn-link collapsed card-header" type="button" data-toggle="collapse" data-target="#collapse${i}"
+aria-expanded="true" aria-controls="collapse${i}">
+        <div class="" id="headingOne">
+          <h5 class="mb-0">
+              <div style="font-size:2.5rem;text-align: left;">
+                  <b><span style="font-size: 3.5rem; ">${state}</span></b> <br>
+                  <i class="fa fa-calendar-alt"></i> <b>Start:</b>  ${start}  <br>
+                  <i class="fa fa-clock"></i> <b>Duration:</b>  ${toHHMMSS(date / 1000)} <br>
+                  <i class="fa fa-thermometer-half"></i> <b>Average:</b>  ${recordsArray[i].average.toFixed(3)}&deg;C <br>
+              </div>
 
-        <p style="float:right;font-size:2.5rem;text-align: right;"> Temperature <br>Assessment
-        <br>
 
-        <b>${assessmentResult}</b>
-        </p>
-      </h5>
-    </div>
+            <p style="float:right;font-size:2.5rem;text-align: right;"> Temperature <br>Assessment
+            <br>
+
+            <b>${assessmentResult}</b>
+            <br><i class="fa fa-chevron-down"></i>
+            </p>
+          </h5>
+        </div>
+    </button>
     <div id="collapse${i}" class="collapse" aria-labelledby="headingOne"
       data-parent="#accordionExample">
       <div class="card-body"  >
