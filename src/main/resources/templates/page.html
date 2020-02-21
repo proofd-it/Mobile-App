@@ -242,8 +242,6 @@
                             }
                             let date = Date.parse(recordsArray[i].timeEnd) - Date.parse(recordsArray[i].timeStart);
                             let state = recordsArray[i].state.charAt(0).toUpperCase() + recordsArray[i].state.toLowerCase().substring(1);
-                            // let start = humanDate(Date.parse(recordsArray[i].timeStart));
-                            console.log(recordsArray[i].timeStart);
                             let start = Date.parse(recordsArray[i].timeStart).toString("h:m tt MMM d");
                             html = html + `
   <div class="accordion" id="accordionExample">
@@ -255,12 +253,13 @@
           <b><span style="font-size: 3.5rem; ">${state}</span></b> <br>
           <i class="fa fa-calendar-alt"></i> <b>Start:</b>  ${start}  <br>
           <i class="fa fa-clock"></i> <b>Duration:</b>  ${toHHMMSS(date / 1000)} <br>
+          <i class="fa fa-thermometer-half"></i> <b>Average:</b>  ${recordsArray[i].average.toFixed(3)}&deg;C <br>
         </button>
 
-        <p style="float:right;font-size:2.5rem;text-align: right;"> <i class="fa fa-thermometer-half"></i> Temperature <br>Assessment
+        <p style="float:right;font-size:2.5rem;text-align: right;"> Temperature <br>Assessment
         <br>
 
-        ${assessmentResult}
+        <b>${assessmentResult}</b>
         </p>
       </h5>
     </div>
