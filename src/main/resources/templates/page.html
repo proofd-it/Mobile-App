@@ -28,6 +28,37 @@
     <script src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.6/dist/loadingoverlay.min.js"></script>
     <script th:src="@{/js/puck.js}"></script>
     <script th:src="@{/js/script.js}"></script>
+    <style>
+        #assessment {
+            text-align: center;
+            font-size: 50px;
+            border-style: solid;
+            border-width: 2px;
+            background: #f7f7f7;
+            margin: auto;
+        }
+        .not-ok {
+            border-color: red;
+            color: red;
+        }
+        .ok {
+            border-color: green;
+            color: green;
+        }
+        #warning {
+            text-align: center;
+            font-size: 30px;
+            margin: auto;
+            border-style: solid;
+            border-width: 2px;
+            background: #f7f7f7;
+            padding: 5px;
+        }
+        .warning-present {
+            border-color: #FFBF00;
+            color: #FFBF00;
+        }
+    </style>
 
 </head>
 
@@ -40,11 +71,23 @@
         <!--Grid column-->
         <div class="col-md-12 mb-12">
 
-            <h2 style="text-align:center; font-size:50px;">Overall Assessment: <strong><span
-                    id="assessment"></span></strong>
-            </h2>
-            <h2 style="text-align:center; font-size:50px;">Warnings: <strong><span id="warning"></span></strong></h2>
+            <div class="col-md-12">
+                <div><h2 style="text-align:center; font-size:50px;">Overall Assessment:</h2></div>
+                <div class="col-md-12" id="assessment">Awaiting</div>
+            </div>
+
+            <div class="col-md-12">
+                <div><h2 style="text-align:center; font-size:50px;">Warnings:</h2></div>
+                <div class="col-md-12 no-warning" id="warning">No Warnings</div>
+            </div>
+
             <div class="col-md-12 mb-12">
+
+
+                <hr class="my-4">
+                <div id="main"></div>
+                <hr class="my-4">
+
                 <div class="row">
                     <div class="col-sm-12 text-center">
                         <button OnClick="addToBlockchain(true)" Style="width: 300px;font-size:40px;"
@@ -57,10 +100,6 @@
                         </button>
                     </div>
                 </div>
-
-                <hr class="my-4">
-                <div id="main"></div>
-                <hr class="my-4">
 
                 <script>
                     function toHHMMSS(sec_num) {
@@ -140,7 +179,7 @@
                                         borderWidth: 4,
                                         label: {
                                             enabled: true,
-                                            content: 'Maximum cold storage temperature',
+                                            content: 'Maximum allowed temperature',
                                             fontSize: 30
                                         }
                                     }],
@@ -169,7 +208,7 @@
                             if (recordsArray[i].assessment === "ok") {
                                 assessmentResult = '<span style="color:green">OK</span>';
                                 if (recordsArray[i].state == "outside") {
-                                    explanationText = "Time allowed time of 15 minutes for the item to be outside a cooling facility has not been exceeded and the observed ambient temperature has not exceeded 25&deg;C";
+                                    explanationText = "The observed ambient temperature has not exceeded 25&deg;C";
                                 }
                                 if (recordsArray[i].state == "fridge") {
                                     explanationText = "The observed fridge temperature has not exceeded 5&deg;C in 3 consecutive readings";
@@ -181,7 +220,7 @@
                                 assessmentResult = '<span style="color:red">NOT OK</span>';
 
                                 if (recordsArray[i].state == "outside") {
-                                    explanationText = "Time allowed for the item to be outside a cooling facility has been exceeded or the observed ambient temperature has exceeded 20&deg;C";
+                                    explanationText = "The observed ambient temperature has exceeded 25&deg;C in at least 3 consecutive readings";
                                 }
 
                                 if (recordsArray[i].state == "fridge") {
@@ -206,7 +245,7 @@
           Duration:  ${toHHMMSS(date / 1000)} <br>
         </button>
 
-        <p style="float:right;font-size:2.5rem;"> Assessment
+        <p style="float:right;font-size:2.5rem;"> Temperature <br>Assessment
         <br>
 
         ${assessmentResult}
@@ -250,17 +289,25 @@
                             let warningElement = document.getElementById("warning");
 
                             if (data.warnings) {
-                                warningElement.innerHTML = data.warnings.map(x => x.warning).join(", ");
+                                warningElement.innerHTML = "<ol>";
+                                let allWarnings = data.warnings.map(x => x.warning);
+                                allWarnings.forEach(function(item){
+                                    warningElement.innerHTML += "<li>" + item + "</li>";
+                                });
+                                warningElement.innerHTML += "</ol>";
+                                warningElement.classList.add("warning-present")
                             }
                             if (overallAssessment) {
-                                assessemntElement.innerHTML = "COMPLIANT";
+                                assessemntElement.innerHTML = "OK";
+                                assessemntElement.classList.add("ok")
                             } else {
-                                assessemntElement.innerHTML = "NOT COMPLIANT";
+                                assessemntElement.innerHTML = "NOT OK";
+                                assessemntElement.classList.add("not-ok")
                             }
                             document.getElementById("main").innerHTML = html;
                             for (i = 0; i < recordsArray.length; i++) {
                                 if (recordsArray[i].assessment === "not ok") {
-                                    let guideline = recordsArray[i].state == "outside" ? 20 : 5;
+                                    let guideline = recordsArray[i].state == "outside" ? 25 : 5;
                                     console.log(recordsArray[i].data);
                                     addChart(`chart${i}`, recordsArray[i].data, guideline);
                                 }
