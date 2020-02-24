@@ -321,7 +321,7 @@ aria-expanded="true" aria-controls="collapse${i}" style="text-decoration: none;"
                             let assessemntElement = document.getElementById("assessment");
                             let warningElement = document.getElementById("warning");
 
-                            if (data.warnings) {
+                            if (data.warnings && data.warnings.length > 0) {
                                 let warningHtml = "<ol>"
                                 warningElement.innerHTML = "<ol>";
                                 let allWarnings = data.warnings.map(x => x.warning);
