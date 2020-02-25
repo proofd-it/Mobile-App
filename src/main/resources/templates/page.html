@@ -260,7 +260,7 @@
                             }
                             let date = Date.parse(recordsArray[i].timeEnd) - Date.parse(recordsArray[i].timeStart);
                             let state = recordsArray[i].state.charAt(0).toUpperCase() + recordsArray[i].state.toLowerCase().substring(1);
-                            let start = Date.parse(recordsArray[i].timeStart).toString("h:m tt MMM d");
+                            let start = Date.parse(recordsArray[i].timeStart).toString("h:mm tt MMM d");
                             html = html + `
   <div class="accordion" id="accordionExample">
   <div class="card z-depth-0 bordered">
@@ -331,6 +331,7 @@ aria-expanded="true" aria-controls="collapse${i}" style="text-decoration: none;"
                                 warningHtml += "</ol>";
                                 warningElement.classList.add("warning-present")
                                 $('#warning').html(warningHtml);
+                                overallAssessment = false;
                             }
                             if (overallAssessment) {
                                 assessemntElement.innerHTML = "OK";
