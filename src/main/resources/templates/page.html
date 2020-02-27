@@ -341,11 +341,11 @@ aria-expanded="true" aria-controls="collapse${i}" style="text-decoration: none;"
                                 assessemntElement.classList.add("not-ok")
                             }
                             document.getElementById("main").innerHTML = html;
-                            for (i = 0; i < recordsArray.length; i++) {
-                                if (recordsArray[i].assessment === "not ok") {
-                                    let guideline = recordsArray[i].state == "outside" ? 25 : 5;
-                                    console.log(recordsArray[i].data);
-                                    addChart(`chart${i}`, recordsArray[i].data, guideline);
+                            for (let j = 0; j < recordsArray.length; j++) {
+                                if (recordsArray[j].assessment === "not ok") {
+                                    console.log("not ok");
+                                    let guideline = recordsArray[j].state == "outside" ? 25 : 5;
+                                    addChart(`chart${j}`, recordsArray[j].data, guideline);
                                 }
                             }
                             $("body").LoadingOverlay("hide")
